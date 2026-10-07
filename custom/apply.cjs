@@ -60,6 +60,7 @@ y = y.replace(/^productName: .*$/m, `productName: ${PRODUCT}`);
 y = y.replace(/^publish:\n(?: {2}.*\n)+/m,
   `publish:\n  provider: github\n  owner: ${OWNER}\n  repo: ${REPO_NAME}\n  releaseType: release\n`);
 y = y.replace(/ {4}- target: portable\n {6}arch: \[x64\]\n/, '');
+y = y.replace(/^npmRebuild: true$/m, 'npmRebuild: false'); // native modules come prebuilt
 y = y.replace(/artifactName: Munder-Difflin-\$\{version\}-win-x64-setup\.exe/, 'artifactName: Oficina-IA-${version}-win-x64-setup.exe');
 y = y.replace(/shortcutName: .*/, `shortcutName: ${PRODUCT}`);
 if (y === y0) { console.warn('WARN electron-builder.yml unchanged'); warnings++; }
