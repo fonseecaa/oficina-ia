@@ -53,7 +53,8 @@ edit('src/main/updater.ts', repoConst);
 edit('src/shared/updateState.ts', repoConst);
 
 // 3) packaging config
-let y = fs.readFileSync(path.join(APP, 'electron-builder.yml'), 'utf8');
+// Windows checkouts use CRLF line endings; normalize so the regexes below match.
+let y = fs.readFileSync(path.join(APP, 'electron-builder.yml'), 'utf8').replace(/\r\n/g, '\n');
 const y0 = y;
 y = y.replace(/^appId: .*$/m, `appId: ${APP_ID}`);
 y = y.replace(/^productName: .*$/m, `productName: ${PRODUCT}`);
