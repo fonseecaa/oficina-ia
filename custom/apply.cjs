@@ -68,6 +68,27 @@ if (y === y0) { console.warn('WARN electron-builder.yml unchanged'); warnings++;
 fs.writeFileSync(path.join(APP, 'oficina-builder.yml'), y);
 console.log('wrote oficina-builder.yml');
 
+// 3b) branding: our icon (drawn by brand.cjs, or custom/logo.png etc. if you add your own) + our name
+require('./brand.cjs')(APP);
+for (const [src, dst] of [['logo.png', 'docs/logo.png'], ['icon.png', 'build/icon.png'], ['icon.ico', 'build/icon.ico']]) {
+  const s = path.join(CUSTOM, src);
+  if (fs.existsSync(s)) fs.copyFileSync(s, path.join(APP, dst));
+}
+console.log('brand icons written');
+let renamed = 0;
+(function walk(dir) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const f = path.join(dir, e.name);
+    if (e.isDirectory()) { walk(f); continue; }
+    if (!/\.(ts|tsx|json|html)$/.test(e.name)) continue;
+    const before = fs.readFileSync(f, 'utf8');
+    const after = before.split('Munder Difflin').join(PRODUCT).split('MUNDER DIFFLIN').join(PRODUCT.toUpperCase());
+    if (after !== before) { fs.writeFileSync(f, after); renamed++; }
+  }
+})(path.join(APP, 'src'));
+console.log(`renamed brand in ${renamed} files`);
+if (!renamed) { console.warn('WARN brand name not found in src'); warnings++; }
+
 // 4) release notes shown in the in-app update toast
 const notes = path.join(CUSTOM, 'release-notes.md');
 if (fs.existsSync(notes)) {
